@@ -11,28 +11,51 @@ def rettapar(x,par):
 def f_d(x,par):
     return 1/(np.exp((x-par[1])/((cs.k/cs.e)*par[0]))+1)
 
-def MB_sempl(x,par):
+def MB_sempl(x,par): #Ok questa sembra che venga integrata in modo corretto con simps
     hnu = par[0]
     T   = par[1]
     Ef  = par[2]
     return ( (f_d(x,[T,Ef]) - f_d(x+hnu,[T,Ef])  ) *( np.power(x,2) + hnu*x) )/np.sqrt(( np.power(x,2) * np.power(x+hnu,2)))
 
+def MB_comp1(x,par):
+    hnu   = par[0]
+    T     = par[1]
+    Ef    = par[2]
+    delta = par[3]
+    return ( (  f_d(x,[T,Ef]) - f_d(x+hnu,[T,Ef])  ) *( np.power(x,2) + np.power(delta,2) + hnu*x) )/(np.sqrt(( np.power(x,2) - np.power(delta,2) )) * np.sqrt( ( np.power(x+hnu,2) -np.power(delta,2) )))
 
-def sigma1_MB_1th(x,par):
-    #par[0] = w
-    #par[1] = t
-    #par[2] = Ef
-    #par[3] = delta
-    return (cs.e/(cs.hbar*par[0]))* (( fermi_dirac(x,[par[1],par[2]]) - fermi_dirac(x+(cs.hbar/cs.e)*par[0],[par[1], par[2]]  ) ) * ( x**2+par[3]**2+(cs.hbar/cs.e)*par[0]*x ))/(np.power( x**2-par[3]**2, 0.5 )*np.power((x+(cs.hbar/cs.e)*par[0])**2-par[3]**2,0.5 ))
+def MB_comp2(x,par):
+    hnu   = par[0]
+    T     = par[1]
+    Ef    = par[2]
+    delta = par[3]
+    return ( (  1 - 2*f_d(x+hnu,[T,Ef])  ) *( np.power(x,2) + np.power(delta,2) + hnu*x) )/(np.sqrt(( np.power(x,2) - np.power(delta,2) )) * np.sqrt( ( np.power(x+hnu,2) -np.power(delta,2) )))
 
 
+def MB_comp1_bis(x,par):
+    hnu   = par[0]
+    T     = par[1]
+    Ef    = par[2]
+    delta = par[3]
 
-def sigma1_MB_2th(x,par):
-    #par[0] = w
-    #par[1] = t
-    #par[2] = Ef
-    #par[3] = delta
-    return (cs.e/(cs.hbar*par[0]))* (( 1 - 2*fermi_dirac(x+(cs.hbar/cs.e)*par[0],[par[1], par[2]]  ) ) * ( x**2+par[3]**2+(cs.hbar/cs.e)*par[0]*x ))/(np.power( x**2-par[3]**2, 0.5 )*np.power((x+(cs.hbar/cs.e)*par[0])**2-par[3]**2,0.5 ))
+    return ( ( np.power(x,2) + np.power(delta,2) + hnu*x) )/(np.sqrt(( np.power(x,2) - np.power(delta,2) )) * np.sqrt( ( np.power(x+hnu,2) -np.power(delta,2) )))
+
+
+# definition given by MUHLSCHLEGHEL
+
+
+def get_ch_pot(Ef,t):
+    return Ef*(1-(1/3)*(cs.pi*cs.k*t/cs.e)/(2*Ef))
+
 
 def deltaT(t, delta0, tc):
-    return delta0*np.sqrt(1-np.power(t/tc,4))
+    return delta0*np.sqrt( np.cos((np.pi/2)*(t/tc)) ) 
+
+def test_func(x,par):
+    T   = par[0]
+    Ef  = par[1]
+    hnu = par[2]
+    return (f_d(x,[T,Ef]) - f_d(x+hnu,[T,Ef]))
+
+
+
